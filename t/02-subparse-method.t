@@ -40,7 +40,7 @@ is-deeply
 my $res6 = 'The average mass is 55 lbs.';
 
 is-deeply
-        Text::SubParsers::Core.new('Numeric').subparse($res6),
+        Text::SubParsers::Core.new(Numeric).subparse($res6),
         $["The average mass is", 55, "lbs."];
 
 ## 7
