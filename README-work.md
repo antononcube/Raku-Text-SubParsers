@@ -28,18 +28,11 @@ my $res = "Openheimer's birthday is April 22, 1905 or April 2, 1905, as far as I
 
 Text::SubParsers::Core.new('DateTime').subparse($res).raku;
 ```
-```
-# $["Openheimer's birthday is ", DateTime.new(1905,4,22,0,0,0), " or ", DateTime.new(1905,4,2,0,0,0), ", as far as I know."]
-```
 
 Compare with the result of the `parse` method over the same text:
 
 ```perl6
 Text::SubParsers::Core.new('DateTime').parse($res);
-```
-```
-#ERROR: Cannot interpret the given input with the given spec 'DateTime'.
-# (Any)
 ```
 
 Here are the results of both `subparse` and `parse` on string that is a valid date specification:
@@ -47,15 +40,9 @@ Here are the results of both `subparse` and `parse` on string that is a valid da
 ```perl6
 Text::SubParsers::Core.new('DateTime').subparse('April 22, 1905');
 ```
-```
-# 1905-04-22T00:00:00Z
-```
 
 ```perl6
 Text::SubParsers::Core.new('DateTime').parse('April 22, 1905');
-```
-```
-# 1905-04-22T00:00:00Z
 ```
 
 ------
@@ -78,17 +65,11 @@ my &fs = llm-function(
 
 say &fs('car in USA highway');
 ```
-```
-# 79.5 mph
-```
 
 Here is the corresponding interpretation using sub-parsers:
 
 ```perl6
 Text::SubParsers::Core.new('Numeric').subparse(_.trim).raku;
-```
-```
-# $[79.5, "mph"]
 ```
 
 ------
