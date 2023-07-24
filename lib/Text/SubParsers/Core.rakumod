@@ -5,15 +5,24 @@ use JSON::Fast;
 
 class Text::SubParsers::Core {
     has $.spec is rw = 'Str';
+    has Bool $.exact is rw = False;
 
+    #-------------------------------------------------------
     multi method new($spec) {
         self.bless(:$spec);
     }
 
+    #-------------------------------------------------------
+    method process($input) {
+        return self.parse($input, $!spec, :$!exact);
+    }
+
+    #-------------------------------------------------------
     method subparse($input) {
         return self.parse($input, $!spec, :!exact);
     }
 
+    #-------------------------------------------------------
     multi method parse($input, Bool :$exact = True) {
         return self.parse($input, $!spec, :$exact);
     }
@@ -103,6 +112,7 @@ class Text::SubParsers::Core {
         return %result<parsed>;
     }
 
+    #-------------------------------------------------------
     multi method get-matches(Str $input, &func, Bool :$exact = True) {
         my @ires;
         my @candidates;
