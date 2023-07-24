@@ -9,7 +9,11 @@ class Text::SubParsers::Core {
 
     #-------------------------------------------------------
     multi method new($spec) {
-        self.bless(:$spec);
+        self.bless(:$spec, :!exact);
+    }
+
+    multi method new($spec, Bool $exact) {
+        self.bless(:$spec, :$exact);
     }
 
     #-------------------------------------------------------
