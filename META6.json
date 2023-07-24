@@ -1,0 +1,34 @@
+{
+  "name": "Text::SubParsers",
+  "description": "Text::SubParsers is for extracting and processing of interpret-able sub-strings in texts",
+  "version": "0.1.0",
+  "perl": "6.*",
+  "authors": [
+    "Anton Antonov"
+  ],
+  "auth": "zef:antononcube",
+  "depends": [
+    "DateTime::Grammar:ver<0.1.2+>",
+    "JSON::Fast:ver<0.19+>"
+  ],
+  "build-depends": [],
+  "test-depends": [],
+  "provides": {
+    "Text::SubParsers": "lib/Text/SubParsers.rakumod",
+    "Text::SubParsers::Core": "lib/Text/SubParsers/Core.rakumod"
+  },
+  "resources": [],
+  "license": "Artistic-2.0",
+  "tags": [
+    "parse",
+    "parser",
+    "subparse",
+    "subparser",
+    "sub-parse",
+    "sub-parser",
+    "interpret",
+    "interpreter"
+  ],
+  "api": "1",
+  "source-url": "https://github.com/antononcube/Raku-Text-SubParsers"
+}
