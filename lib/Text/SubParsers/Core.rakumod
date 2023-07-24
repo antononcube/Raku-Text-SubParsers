@@ -38,8 +38,8 @@ class Text::SubParsers::Core {
     multi method parse(Str $input, $spec, Bool :$exact = True) {
         my %result = do given $spec {
 
-            when $_.isa(DateTime) ||
-                    $_.isa(Date) ||
+            when $_ ~~ DateTime:U ||
+                    $_ ~~ Date:U ||
                     $_ ~~ Str && $_.lc ∈ <DateTime Date>>>.lc {
                 self.get-matches($input, &datetime-interpret, :$exact)
             }
@@ -48,29 +48,29 @@ class Text::SubParsers::Core {
                 self.get-matches($input, &from-json, :$exact);
             }
 
-            when $_.isa(Numeric) ||
-                    $_.isa(Num) ||
+            when $_ ~~ Numeric:U ||
+                    $_ ~~ Num:U ||
                     $_ ~~ Str && $_.lc ∈ <Numeric Number>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.Numeric !! Nil }, :$exact);
             }
 
-            when $_.isa(Rational) ||
-                    $_.isa(Rat) ||
+            when $_ ~~ Rational:U ||
+                    $_ ~~ Rat:U ||
                     || $_ ~~ Str && $_.lc ∈ <Rat Rational>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.Rat !! Nil }, :$exact);
             }
 
-            when $_.isa(Int) ||
+            when $_ ~~ Int:U ||
                     $_ ~~ Str && $_.lc ∈ <Int Integer>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.Int !! Nil }, :$exact);
             }
 
-            when $_.isa(UInt) ||
+            when $_ ~~ UInt:U ||
                     $_ ~~ Str && $_.lc ∈ <UInt UnsignedInteger>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.UInt !! Nil }, :$exact);
             }
 
-            when $_.isa(Bool) ||
+            when $_ ~~ Bool:U ||
                     $_ ~~ Str && $_.lc ∈ <Bool Boolean>>>.lc {
                 self.get-matches($input, -> $x {
                     given $x.trim {
@@ -81,7 +81,7 @@ class Text::SubParsers::Core {
                 }, :$exact)
             }
 
-            when $_.isa(Str) ||
+            when $_ ~~ Str:U ||
                     $_ ~~ Str && $_.lc ∈ <asis Str String>>>.lc {
                 %(parsed => $input, error => '')
             }
