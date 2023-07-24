@@ -127,7 +127,9 @@ class Text::SubParsers::Core {
                 try { $p = &func($0.Str) };
                 if !$p.defined || $! { False } else { True }
             }> / -> $match {
-                @ires.append($input.substr($cind .. $match.from - 1));
+                if $cind < $match.from - 1 {
+                    @ires.append($input.substr($cind .. $match.from - 1));
+                }
                 $cind = $match.to;
                 @ires.append(&func(~$match));
                 @candidates.append($[$input.substr(0, $match.from), @ires.tail]);
