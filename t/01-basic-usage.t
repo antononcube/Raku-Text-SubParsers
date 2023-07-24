@@ -23,11 +23,11 @@ is-deeply
         Text::SubParsers::Core.new(&datetime-interpret).subparse($res1);
 
 ## 4
-my $res4 = 'The dictionary is: { "ui" : 3, "io" : 78}.';
+my $res4 = 'The dictionary is: [{ "ui" : 3, "io" : 78 }].';
 
 is-deeply
         Text::SubParsers::Core.new('JSON').subparse($res4),
-        $["The dictionary is:", :ui(3), :io(78), "."];
+        $["The dictionary is:", {:io(78), :ui(3)}, "."];
 
 ## 5
 my $res5 = '[{ "ui" : 3, "io" : 78}, { "GA" : 34, "CA" : 178}]';
