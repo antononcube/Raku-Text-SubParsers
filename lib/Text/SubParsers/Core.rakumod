@@ -40,38 +40,38 @@ class Text::SubParsers::Core {
 
             when $_ ~~ DateTime:U ||
                     $_ ~~ Date:U ||
-                    $_ ~~ Str && $_.lc ∈ <DateTime Date>>>.lc {
-                self.get-matches($input, &datetime-interpret, :$exact)
+                    $_ ~~ Str:D && $_.lc ∈ <DateTime Date>>>.lc {
+                self.get-matches($input.trim, &datetime-interpret, :$exact)
             }
 
-            when $_ ~~ Str && $_.lc ∈ <JSON FromJSON from-json>>>.lc {
-                self.get-matches($input, &from-json, :$exact);
+            when $_ ~~ Str:D && $_.lc ∈ <JSON FromJSON from-json>>>.lc {
+                self.get-matches($input.trim, &from-json, :$exact);
             }
 
             when $_ ~~ Numeric:U ||
                     $_ ~~ Num:U ||
-                    $_ ~~ Str && $_.lc ∈ <Numeric Number>>>.lc {
+                    $_ ~~ Str:D && $_.lc ∈ <Numeric Number>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.Numeric !! Nil }, :$exact);
             }
 
             when $_ ~~ Rational:U ||
                     $_ ~~ Rat:U ||
-                    || $_ ~~ Str && $_.lc ∈ <Rat Rational>>>.lc {
+                    $_ ~~ Str:D && $_.lc ∈ <Rat Rational>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.Rat !! Nil }, :$exact);
             }
 
             when $_ ~~ Int:U ||
-                    $_ ~~ Str && $_.lc ∈ <Int Integer>>>.lc {
+                    $_ ~~ Str:D && $_.lc ∈ <Int Integer>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.Int !! Nil }, :$exact);
             }
 
             when $_ ~~ UInt:U ||
-                    $_ ~~ Str && $_.lc ∈ <UInt UnsignedInteger>>>.lc {
+                    $_ ~~ Str:D && $_.lc ∈ <UInt UnsignedInteger>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.UInt !! Nil }, :$exact);
             }
 
             when $_ ~~ Bool:U ||
-                    $_ ~~ Str && $_.lc ∈ <Bool Boolean>>>.lc {
+                    $_ ~~ Str:D && $_.lc ∈ <Bool Boolean>>>.lc {
                 self.get-matches($input, -> $x {
                     given $x.trim {
                         when $_ ~~ /:i t | true | yes | 1 / { True }
@@ -82,7 +82,7 @@ class Text::SubParsers::Core {
             }
 
             when $_ ~~ Str:U ||
-                    $_ ~~ Str && $_.lc ∈ <asis Str String>>>.lc {
+                    $_ ~~ Str:D && $_.lc ∈ <asis Str String>>>.lc {
                 %(parsed => $input, error => '')
             }
 
