@@ -88,13 +88,20 @@ class Text::SubParsers::Core
             }
 
             when $_.isa(WhateverCode) || $_.isa(Whatever) {
-                self.get-matches(
-                        $input,
-                        { self.many-func($_, [&datetime-interpret,
-                                              &from-json,
-                                              { $_.Numeric },
-                                              { self.to-bool($_) }]) },
-                        :$exact)
+                my %res =
+                        self.get-matches(
+                                $input,
+                                { self.many-func($_, [&datetime-interpret,
+                                                      &from-json,
+                                                      { $_.Numeric },
+                                                      { self.to-bool($_) }]) },
+                                :$exact);
+
+                with %res<parsed> {
+                    %res
+                } else {
+                    %(parsed => $input, error => '')
+                }
             }
 
             when $spec ~~ Callable {
@@ -102,7 +109,7 @@ class Text::SubParsers::Core
             }
 
             default {
-                note 'Unknown interpreter specification';
+                note 'Unknown interpreter specification.';
                 %(parsed => $input, error => '')
             }
         };
