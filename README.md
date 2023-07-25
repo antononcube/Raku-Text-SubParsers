@@ -2,6 +2,9 @@
 
 Raku package for extracting and processing of interpret-able sub-strings in texts.
 
+The primary motivation for creating this package is the post-processing of the outputs of
+Large Language Models (LLMs), [AA1, AAp1, AAp2, AAp3].
+
 ## Installation
 
 From Zef ecosystem:
@@ -121,7 +124,7 @@ Is it true that the JSON expression {"date": "2023-03-08", "rationalNumber": "11
 
 ## Processing LLM outputs
 
-A primary motivation for creating this package is the post-processing the outputs of
+As it was mentioned above, the primary motivation for creating this package is the post-processing of the outputs of
 Large Language Models (LLMs), [AA1, AAp1, AAp2, AAp3].
 
 Here is an example of creating a LLM-function and its invocation over a string:
@@ -138,7 +141,7 @@ my &fs = llm-function(
 say &fs('car in USA highway');
 ```
 ```
-# 79.5 mph
+# 70 mph
 ```
 
 Here is the corresponding interpretation using sub-parsers:
@@ -147,7 +150,7 @@ Here is the corresponding interpretation using sub-parsers:
 get-sub-parser('Numeric').subparse(_.trim).raku;
 ```
 ```
-# $[79.5, "mph"]
+# $[70, "mph"]
 ```
 
 Here is a more involved example in which:
@@ -167,7 +170,7 @@ my @ftRes = |&ft(9, 'WWI');
 @ftRes = @ftRes.grep({ $_ !~~ Str });
 ```
 ```
-# [{date => 1914-07-28, event => Austria-Hungary declares war on Serbia} {date => 1914-07-29, event => Germany declares war on Russia} {date => 1914-07-30, event => France declares war on Germany} {date => 1914-08-01, event => Great Britain declares war on Germany} {date => 1914-08-04, event => Japan declares war on Germany} {date => 1914-11-09, event => First Battle of Ypres} {date => 1915-05-07, event => Second Battle of Ypres} {date => 1916-07-01, event => Battle of the Somme} {date => 1917-03-08, event => United States declares war on Germany}]
+# [{date => 1914-07-28, event => Austria-Hungary declares war on Serbia} {date => 1914-08-01, event => Germany declares war on Russia} {date => 1914-08-03, event => Germany declares war on France} {date => 1914-08-04, event => Great Britain declares war on Germany} {date => 1914-08-17, event => Battle of Tannenberg} {date => 1914-11-09, event => First Battle of Ypres} {date => 1915-05-24, event => Second Battle of Ypres} {date => 1916-07-01, event => Battle of the Somme} {date => 1917-03-08, event => Russian Revolution}]
 ```
 
 ```perl6, output.lang=mermaid, output.prompt=NONE
@@ -181,14 +184,14 @@ for @ftRes -> $record {
 timeline
 	title WW1 events
 	1914-07-28 : Austria-Hungary declares war on Serbia
-	1914-07-29 : Germany declares war on Russia
-	1914-07-30 : France declares war on Germany
-	1914-08-01 : Great Britain declares war on Germany
-	1914-08-04 : Japan declares war on Germany
+	1914-08-01 : Germany declares war on Russia
+	1914-08-03 : Germany declares war on France
+	1914-08-04 : Great Britain declares war on Germany
+	1914-08-17 : Battle of Tannenberg
 	1914-11-09 : First Battle of Ypres
-	1915-05-07 : Second Battle of Ypres
+	1915-05-24 : Second Battle of Ypres
 	1916-07-01 : Battle of the Somme
-	1917-03-08 : United States declares war on Germany
+	1917-03-08 : Russian Revolution
 ```
 
 ------

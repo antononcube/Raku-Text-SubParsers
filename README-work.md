@@ -2,6 +2,9 @@
 
 Raku package for extracting and processing of interpret-able sub-strings in texts.
 
+The primary motivation for creating this package is the post-processing of the outputs of
+Large Language Models (LLMs), [AA1, AAp1, AAp2, AAp3].
+
 ## Installation
 
 From Zef ecosystem:
@@ -92,7 +95,7 @@ Is it true that the JSON expression {"date": "2023-03-08", "rationalNumber": "11
 
 ## Processing LLM outputs
 
-A primary motivation for creating this package is the post-processing the outputs of
+As it was mentioned above, the primary motivation for creating this package is the post-processing of the outputs of
 Large Language Models (LLMs), [AA1, AAp1, AAp2, AAp3].
 
 Here is an example of creating a LLM-function and its invocation over a string:
