@@ -15,7 +15,8 @@
   "test-depends": [],
   "provides": {
     "Text::SubParsers": "lib/Text/SubParsers.rakumod",
-    "Text::SubParsers::Core": "lib/Text/SubParsers/Core.rakumod"
+    "Text::SubParsers::Core": "lib/Text/SubParsers/Core.rakumod",
+    "Text::SubParsers::Functions": "lib/Text/SubParsers/Functions.rakumod"
   },
   "resources": [],
   "license": "Artistic-2.0",
