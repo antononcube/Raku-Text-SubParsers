@@ -91,10 +91,11 @@ class Text::SubParsers::Core
                 my %res =
                         self.get-matches(
                                 $input,
-                                { self.many-func($_, [&datetime-interpret,
-                                                      &from-json,
-                                                      { $_.Numeric },
-                                                      { self.to-bool($_) }]) },
+                                { self.many-funcs($_, [&datetime-interpret,
+                                                       &from-json,
+                                                       { $_.Numeric },
+                                                       { self.to-bool($_) }])
+                                },
                                 :$exact);
 
                 with %res<parsed> {

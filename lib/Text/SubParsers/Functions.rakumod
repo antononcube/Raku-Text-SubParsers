@@ -12,7 +12,7 @@ role Text::SubParsers::Functions {
     }
 
     #-------------------------------------------------------
-    method many-func(Str $x is copy,
+    method many-funcs(Str $x is copy,
                      @funcs where @funcs.all ~~ Callable) {
         my $res;
 
