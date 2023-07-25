@@ -2,8 +2,10 @@ use v6.d;
 
 use DateTime::Grammar;
 use JSON::Fast;
+use Text::SubParsers::Functions;
 
-class Text::SubParsers::Core {
+class Text::SubParsers::Core
+        does Text::SubParsers::Functions {
     has $.spec is rw = 'Str';
     has Bool $.exact is rw = False;
 
@@ -70,15 +72,14 @@ class Text::SubParsers::Core {
                 self.get-matches($input, { $_.trim ?? $_.trim.UInt !! Nil }, :$exact);
             }
 
+            when $_ ~~ Complex:U ||
+                    $_ ~~ Str:D && $_.lc ∈ <complex> {
+                self.get-matches($input, { $_.trim ?? $_.trim.Complex !! Nil }, :$exact);
+            }
+
             when $_ ~~ Bool:U ||
                     $_ ~~ Str:D && $_.lc ∈ <Bool Boolean>>>.lc {
-                self.get-matches($input, -> $x {
-                    given $x.trim {
-                        when $_ ~~ /:i t | true | yes | 1 / { True }
-                        when $_ ~~ /:i f | false | no | 0 / { False }
-                        default { Nil }
-                    }
-                }, :$exact)
+                self.get-matches($input, { self.to-bool($_) }, :$exact)
             }
 
             when $_ ~~ Str:U ||
@@ -86,12 +87,18 @@ class Text::SubParsers::Core {
                 %(parsed => $input, error => '')
             }
 
-            when $spec ~~ Callable {
-                self.get-matches($input, $spec, :$exact)
+            when $_.isa(WhateverCode) || $_.isa(Whatever) {
+                self.get-matches(
+                        $input,
+                        { self.many-func($_, [&datetime-interpret,
+                                              &from-json,
+                                              { $_.Numeric },
+                                              { self.to-bool($_) }]) },
+                        :$exact)
             }
 
-            when $_.isa(WhateverCode) || $_.isa(Whatever) {
-                %(parsed => $input, error => '')
+            when $spec ~~ Callable {
+                self.get-matches($input, $spec, :$exact)
             }
 
             default {
