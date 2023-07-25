@@ -4,9 +4,9 @@ role Text::SubParsers::Functions {
 
     #-------------------------------------------------------
     method to-bool(Str $x) {
-        given $x.trim {
-            when $_ ~~ /:i ^ \h* [t | true | yes | 1] \h* $ / { True }
-            when $_ ~~ /:i ^ \h* [f | false | no | 0] \h* $ / { False }
+        given $x {
+            when $_ ~~ /:i ^ [ true | yes ] $ / { True }
+            when $_ ~~ /:i ^ [ false | no ] $ / { False }
             default { Nil }
         }
     }
