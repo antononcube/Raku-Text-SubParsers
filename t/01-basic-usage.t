@@ -48,5 +48,10 @@ is-deeply
         get-sub-parser({ $_.trim ?? $_.trim.Numeric !! Nil }).subparse($res6),
         $["The average mass is", 55, "lbs."];
 
+## 8
+isa-ok get-sub-parser(Str).subparse($res1), Str:D;
+
+## 9
+isa-ok get-sub-parser('Str').subparse($res1), Str:D;
 
 done-testing;
