@@ -65,11 +65,11 @@ Text::SubParsers::Core.new('DateTime').parse('April 22, 1905');
 
 ### Sub-parsing with user supplied subs
 
-Instead of using `Text::SubParsers::Core.new` the functions `get-sub-parser` and `get-parser`
+Instead of using `Text::SubParsers::Core.new` the functions `sub-parser` and `exact-parser`
 can be used.
 
 Here is an example of using:
-- Invocation of `get-sub-parser`
+- Invocation of `sub-parser`
 - (Sub-)parsing with a user supplied function (sub)
 
 ```perl6
@@ -77,7 +77,7 @@ sub known-cities(Str $x) {
     $x ∈ ['Seattle', 'Chicago', 'New York', 'Sao Paulo', 'Miami', 'Los Angeles'] ?? $x.uc !! Nil 
 }
 
-get-sub-parser(&known-cities).subparse("
+sub-parser(&known-cities).subparse("
 1. New York City, NY - 8,804,190
 2. Los Angeles, CA - 3,976,322
 3. Chicago, IL - 2,746,388
@@ -112,7 +112,7 @@ With the parser spec `WhateverCode` an attempt is made to extract dates, JSON ex
 Here is an example:
 
 ```perl6
-get-sub-parser(WhateverCode).subparse('
+sub-parser(WhateverCode).subparse('
 Is it true that the JSON expression {"date": "2023-03-08", "rationalNumber": "11/3"} contains the date 2023-03-08 and the rational number 11/3?
 ').raku
 ```
@@ -141,16 +141,16 @@ my &fs = llm-function(
 say &fs('car in USA highway');
 ```
 ```
-# 70 mph
+# 75 mph
 ```
 
 Here is the corresponding interpretation using sub-parsers:
 
 ```perl6
-get-sub-parser('Numeric').subparse(_.trim).raku;
+sub-parser('Numeric').subparse(_.trim).raku;
 ```
 ```
-# $[70, "mph"]
+# $[75, "mph"]
 ```
 
 Here is a more involved example in which:
@@ -163,14 +163,15 @@ Here is a more involved example in which:
 ```perl6
 my &ft = llm-function(
         {"What are the $^a most significant events of $^b? Give the answer with date-event pairs in JSON format."},
-        form => get-sub-parser('JSON'),
+        form => sub-parser('JSON'),
         llm-evaluator => llm-configuration('PaLM', max-tokens => 500));
 
 my @ftRes = |&ft(9, 'WWI');
 @ftRes = @ftRes.grep({ $_ !~~ Str });
 ```
 ```
-# [{date => 1914-07-28, event => Austria-Hungary declares war on Serbia} {date => 1914-08-01, event => Germany declares war on Russia} {date => 1914-08-03, event => Germany declares war on France} {date => 1914-08-04, event => Great Britain declares war on Germany} {date => 1914-08-17, event => Battle of Tannenberg} {date => 1914-11-09, event => First Battle of Ypres} {date => 1915-05-24, event => Second Battle of Ypres} {date => 1916-07-01, event => Battle of the Somme} {date => 1917-03-08, event => Russian Revolution}]
+#ERROR: Text::SubParsers::Core.new(spec => "JSON", exact => Bool::False)
+# [{date => 1914-07-28, event => Austria-Hungary declares war on Serbia} {date => 1914-07-29, event => Germany declares war on Russia} {date => 1914-07-30, event => Germany declares war on France} {date => 1914-08-01, event => Great Britain declares war on Germany} {date => 1914-08-04, event => Japan declares war on Germany} {date => 1914-11-09, event => First Battle of Ypres} {date => 1915-05-07, event => Second Battle of Ypres} {date => 1916-07-01, event => Battle of the Somme} {date => 1917-03-08, event => Russian Revolution}]
 ```
 
 ```perl6, output.lang=mermaid, output.prompt=NONE
@@ -184,12 +185,12 @@ for @ftRes -> $record {
 timeline
 	title WW1 events
 	1914-07-28 : Austria-Hungary declares war on Serbia
-	1914-08-01 : Germany declares war on Russia
-	1914-08-03 : Germany declares war on France
-	1914-08-04 : Great Britain declares war on Germany
-	1914-08-17 : Battle of Tannenberg
+	1914-07-29 : Germany declares war on Russia
+	1914-07-30 : Germany declares war on France
+	1914-08-01 : Great Britain declares war on Germany
+	1914-08-04 : Japan declares war on Germany
 	1914-11-09 : First Battle of Ypres
-	1915-05-24 : Second Battle of Ypres
+	1915-05-07 : Second Battle of Ypres
 	1916-07-01 : Battle of the Somme
 	1917-03-08 : Russian Revolution
 ```

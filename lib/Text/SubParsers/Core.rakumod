@@ -110,7 +110,7 @@ class Text::SubParsers::Core
             }
 
             default {
-                note 'Unknown interpreter specification.';
+                note 'Unknown interpreter specification: ' ~ $spec.raku;
                 %(parsed => $input, error => '')
             }
         };

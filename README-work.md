@@ -52,11 +52,11 @@ Text::SubParsers::Core.new('DateTime').parse('April 22, 1905');
 
 ### Sub-parsing with user supplied subs
 
-Instead of using `Text::SubParsers::Core.new` the functions `get-sub-parser` and `get-parser`
+Instead of using `Text::SubParsers::Core.new` the functions `sub-parser` and `exact-parser`
 can be used.
 
 Here is an example of using:
-- Invocation of `get-sub-parser`
+- Invocation of `sub-parser`
 - (Sub-)parsing with a user supplied function (sub)
 
 ```perl6
@@ -64,7 +64,7 @@ sub known-cities(Str $x) {
     $x ∈ ['Seattle', 'Chicago', 'New York', 'Sao Paulo', 'Miami', 'Los Angeles'] ?? $x.uc !! Nil 
 }
 
-get-sub-parser(&known-cities).subparse("
+sub-parser(&known-cities).subparse("
 1. New York City, NY - 8,804,190
 2. Los Angeles, CA - 3,976,322
 3. Chicago, IL - 2,746,388
@@ -86,7 +86,7 @@ With the parser spec `WhateverCode` an attempt is made to extract dates, JSON ex
 Here is an example:
 
 ```perl6
-get-sub-parser(WhateverCode).subparse('
+sub-parser(WhateverCode).subparse('
 Is it true that the JSON expression {"date": "2023-03-08", "rationalNumber": "11/3"} contains the date 2023-03-08 and the rational number 11/3?
 ').raku
 ```
@@ -115,7 +115,7 @@ say &fs('car in USA highway');
 Here is the corresponding interpretation using sub-parsers:
 
 ```perl6
-get-sub-parser('Numeric').subparse(_.trim).raku;
+sub-parser('Numeric').subparse(_.trim).raku;
 ```
 
 Here is a more involved example in which:
@@ -128,7 +128,7 @@ Here is a more involved example in which:
 ```perl6
 my &ft = llm-function(
         {"What are the $^a most significant events of $^b? Give the answer with date-event pairs in JSON format."},
-        form => get-sub-parser('JSON'),
+        form => sub-parser('JSON'),
         llm-evaluator => llm-configuration('PaLM', max-tokens => 500));
 
 my @ftRes = |&ft(9, 'WWI');
