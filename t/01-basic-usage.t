@@ -54,4 +54,11 @@ isa-ok sub-parser(Str).subparse($res1), Str:D;
 ## 9
 isa-ok sub-parser('Str').subparse($res1), Str:D;
 
+## 10
+my %res10 = 1 => '{ "ui" : 3, "io" : 78}', 2 => '{ "GA" : 34, "CA" : 178}';
+
+is-deeply
+        sub-parser('JSON').subparse(%res10),
+        %( 1 => { "ui" => 3, "io" => 78 }, 2 => { "GA" => 34, "CA" => 178 });
+
 done-testing;
