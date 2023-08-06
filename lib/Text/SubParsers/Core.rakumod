@@ -154,7 +154,7 @@ class Text::SubParsers::Core
         }
 
         if $exact {
-            return %(:$input, parsed => Nil, error => "Cannot interpret the given input with the given function.");
+            return %(:$input, parsed => Empty, error => "Cannot interpret the given input with the given function.");
         }
 
         my $cind = 0;
@@ -179,7 +179,7 @@ class Text::SubParsers::Core
         if $cind {
             return %(:$input, parsed => @ires, error => '');
         } else {
-            return %(:$input, parsed => Nil, error => "No interpretations found with the given function for the given input.");
+            return %(:$input, parsed => Empty, error => "No interpretations found with the given function for the given input.");
         }
     }
 }
