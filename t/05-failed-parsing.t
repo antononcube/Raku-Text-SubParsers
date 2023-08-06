@@ -12,7 +12,7 @@ Some list [1, 2, 4].
 END
 
 ## 1
-isa-ok sub-parser(DateTime).subparse($res), Failure;
+fails-like { sub-parser(DateTime).subparse($res) }, X::AdHoc;
 
 ## 2
 my $res2 = sub-parser(DateTime).subparse($res);
@@ -22,7 +22,7 @@ isa-ok $res2.exception.payload, Hash;
 is-deeply $res2.exception.payload.keys.sort, <input parsed error>.sort;
 
 ## 4
-isa-ok exact-parser(DateTime).subparse($res), Failure;
+fails-like { exact-parser(DateTime).parse($res) }, X::AdHoc;
 
 ## 5
 my $res5 = exact-parser(DateTime).subparse($res);
