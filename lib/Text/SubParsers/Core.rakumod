@@ -37,6 +37,10 @@ class Text::SubParsers::Core
         return @input.map({ self.parse($_, $spec, :$exact) });
     }
 
+    multi method parse(%input, $spec, Bool :$exact = True) {
+        return %input.map({ $_.key => self.parse($_.value, $spec, :$exact) }).Hash;
+    }
+
     multi method parse(Str $input, $spec, Bool :$exact = True) {
         my %result = do given $spec {
 
@@ -84,7 +88,7 @@ class Text::SubParsers::Core
 
             when $_ ~~ Str:U ||
                     $_ ~~ Str:D && $_.lc ∈ <asis Str String>>>.lc {
-                %(parsed => $input, error => '')
+                %(:$input, parsed => $input, error => '')
             }
 
             when $_.isa(WhateverCode) || $_.isa(Whatever) {
@@ -101,7 +105,7 @@ class Text::SubParsers::Core
                 with %res<parsed> {
                     %res
                 } else {
-                    %(parsed => $input, error => '')
+                    %(:$input, parsed => $input, error => '')
                 }
             }
 
@@ -111,7 +115,7 @@ class Text::SubParsers::Core
 
             default {
                 note 'Unknown interpreter specification: ' ~ $spec.raku;
-                %(parsed => $input, error => '')
+                %(:$input, parsed => $input, error => '')
             }
         };
 
@@ -125,7 +129,7 @@ class Text::SubParsers::Core
                 }
             }
 
-            note %result<error>;
+            fail %result;
         }
 
         return %result<parsed>;
@@ -142,11 +146,11 @@ class Text::SubParsers::Core
         }
 
         if $pres.defined && !$! {
-            return %(parsed => $pres, error => '');
+            return %(:$input, parsed => $pres, error => '');
         }
 
         if $exact {
-            return %(parsed => Nil, error => "Cannot interpret the given input with the given function.");
+            return %(:$input, parsed => Nil, error => "Cannot interpret the given input with the given function.");
         }
 
         my $cind = 0;
@@ -169,9 +173,9 @@ class Text::SubParsers::Core
         }
 
         if $cind {
-            return %(parsed => @ires, error => '');
+            return %(:$input, parsed => @ires, error => '');
         } else {
-            return %(parsed => Nil, error => "No interpretations found with the given function for the given input.");
+            return %(:$input, parsed => Nil, error => "No interpretations found with the given function for the given input.");
         }
     }
 }
