@@ -37,7 +37,7 @@ Text::SubParsers::Core.new('DateTime').subparse($res).raku;
 Compare with the result of the `parse` method over the same text:
 
 ```perl6
-Text::SubParsers::Core.new('DateTime').parse($res);
+say Text::SubParsers::Core.new('DateTime').parse($res);
 ```
 
 Here are the results of both `subparse` and `parse` on string that is a valid date specification:
@@ -90,6 +90,51 @@ sub-parser(WhateverCode).subparse('
 Is it true that the JSON expression {"date": "2023-03-08", "rationalNumber": "11/3"} contains the date 2023-03-08 and the rational number 11/3?
 ').raku
 ```
+
+### Different types of input
+
+The input given to the sub-parsers can be a:
+
+- String
+- Array of strings
+- Map with string values
+
+Here is an example with an array of strings:
+
+```perl6
+sub-parser(WhateverCode).subparse(['{a:3, y:45}', "2023-08-06", "Mass 1,503lbs"]).raku
+```
+
+Here is an example with a Map:
+
+```perl6
+sub-parser('JSON').subparse({1 => '{ "ui" : 3, "io" : 78}', 2 => '{ "GA" : 34, "CA" : 178}'}).raku
+```
+
+
+------
+
+## Failed parsing
+
+If the given texts cannot be parsed `Failure` objects are returned.
+This allows the payload of failure's `Exception` object to be examined and see the inputs to the sub-parsers:
+
+```perl6
+my $fres = sub-parser(DateTime).subparse('Some date [1930, 2, 14].');
+$fres.raku
+```
+
+Here is the structure of the exception's payload:
+
+```perl6
+$fres.exception.payload
+```
+
+Using a *soft* `Exception` (i.e. a `Failure` object) is useful when
+(i) the sub-parsing is part of a certain pipeline of operations *and*
+(ii) the input to the sub-parser is "hard to compute" (the result of a lengthy or expensive computation.)
+Instead of just giving a message "cannot parse" or similar the returned `Failure` object 
+allows examination of the input and error.
 
 ------
 

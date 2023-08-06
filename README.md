@@ -40,11 +40,13 @@ Text::SubParsers::Core.new('DateTime').subparse($res).raku;
 Compare with the result of the `parse` method over the same text:
 
 ```perl6
-Text::SubParsers::Core.new('DateTime').parse($res);
+say Text::SubParsers::Core.new('DateTime').parse($res);
 ```
 ```
-#ERROR: Cannot interpret the given input with the given spec 'DateTime'.
-# (Any)
+#ERROR: error	Cannot interpret the given input with the given spec 'DateTime'.
+#ERROR: input	Openheimer's birthday is April 22, 1905 or April 2, 1905, as far as I know.
+#ERROR: parsed
+# Nil
 ```
 
 Here are the results of both `subparse` and `parse` on string that is a valid date specification:
@@ -120,6 +122,63 @@ Is it true that the JSON expression {"date": "2023-03-08", "rationalNumber": "11
 # $["\nIs it", Bool::True, "that the JSON expression", {:date("2023-03-08"), :rationalNumber("11/3")}, "contains the date", DateTime.new(2023,3,8,0,0,0), "and the rational number", <11/3>, "?\n"]
 ```
 
+### Different types of input
+
+The input given to the sub-parsers can be a:
+
+- String
+- Array of strings
+- Map with string values
+
+Here is an example with an array of strings:
+
+```perl6
+sub-parser(WhateverCode).subparse(['{a:3, y:45}', "2023-08-06", "Mass 1,503lbs"]).raku
+```
+```
+# [["\{a:", 3, ", y:", 45, "}"], DateTime.new(2023,8,6,0,0,0), ["Mass", 1503, "lbs"]]
+```
+
+Here is an example with a Map:
+
+```perl6
+sub-parser('JSON').subparse({1 => '{ "ui" : 3, "io" : 78}', 2 => '{ "GA" : 34, "CA" : 178}'}).raku
+```
+```
+# {"1" => ${:io(78), :ui(3)}, "2" => ${:CA(178), :GA(34)}}
+```
+
+
+------
+
+## Failed parsing
+
+If the given texts cannot be parsed `Failure` objects are returned.
+This allows the payload of failure's `Exception` object to be examined and see the inputs to the sub-parsers:
+
+```perl6
+my $fres = sub-parser(DateTime).subparse('Some date [1930, 2, 14].');
+$fres.raku
+```
+```
+# Failure.new(exception => X::AdHoc.new(payload => ${:error("No interpretations found with the given spec (DateTime) for the given input."), :input("Some date [1930, 2, 14]."), :parsed(Empty)}), backtrace => Backtrace.new)
+```
+
+Here is the structure of the exception's payload:
+
+```perl6
+$fres.exception.payload
+```
+```
+# {error => No interpretations found with the given spec (DateTime) for the given input., input => Some date [1930, 2, 14]., parsed => ()}
+```
+
+Using a *soft* `Exception` (i.e. a `Failure` object) is useful when
+(i) the sub-parsing is part of a certain pipeline of operations *and*
+(ii) the input to the sub-parser is "hard to compute" (the result of a lengthy or expensive computation.)
+Instead of just giving a message "cannot parse" or similar the returned `Failure` object 
+allows examination of the input and error.
+
 ------
 
 ## Processing LLM outputs
@@ -141,7 +200,7 @@ my &fs = llm-function(
 say &fs('car in USA highway');
 ```
 ```
-# 75 mph
+# 70 mph
 ```
 
 Here is the corresponding interpretation using sub-parsers:
@@ -150,7 +209,7 @@ Here is the corresponding interpretation using sub-parsers:
 sub-parser('Numeric').subparse(_.trim).raku;
 ```
 ```
-# $[75, "mph"]
+# $[70, "mph"]
 ```
 
 Here is a more involved example in which:
@@ -170,8 +229,7 @@ my @ftRes = |&ft(9, 'WWI');
 @ftRes = @ftRes.grep({ $_ !~~ Str });
 ```
 ```
-#ERROR: Text::SubParsers::Core.new(spec => "JSON", exact => Bool::False)
-# [{date => 1914-07-28, event => Austria-Hungary declares war on Serbia} {date => 1914-07-29, event => Germany declares war on Russia} {date => 1914-07-30, event => Germany declares war on France} {date => 1914-08-01, event => Great Britain declares war on Germany} {date => 1914-08-04, event => Japan declares war on Germany} {date => 1914-11-09, event => First Battle of Ypres} {date => 1915-05-07, event => Second Battle of Ypres} {date => 1916-07-01, event => Battle of the Somme} {date => 1917-03-08, event => Russian Revolution}]
+# [{date => 1914-07-28, event => Austria-Hungary declares war on Serbia} {date => 1914-07-29, event => Russia mobilizes its army} {date => 1914-07-30, event => Germany declares war on Russia} {date => 1914-07-31, event => Germany declares war on France} {date => 1914-08-01, event => Germany invades Belgium} {date => 1914-08-04, event => Great Britain declares war on Germany} {date => 1914-08-17, event => First Battle of the Marne} {date => 1915-05-07, event => Second Battle of Ypres} {date => 1916-07-01, event => Battle of the Somme}]
 ```
 
 ```perl6, output.lang=mermaid, output.prompt=NONE
@@ -185,14 +243,14 @@ for @ftRes -> $record {
 timeline
 	title WW1 events
 	1914-07-28 : Austria-Hungary declares war on Serbia
-	1914-07-29 : Germany declares war on Russia
-	1914-07-30 : Germany declares war on France
-	1914-08-01 : Great Britain declares war on Germany
-	1914-08-04 : Japan declares war on Germany
-	1914-11-09 : First Battle of Ypres
+	1914-07-29 : Russia mobilizes its army
+	1914-07-30 : Germany declares war on Russia
+	1914-07-31 : Germany declares war on France
+	1914-08-01 : Germany invades Belgium
+	1914-08-04 : Great Britain declares war on Germany
+	1914-08-17 : First Battle of the Marne
 	1915-05-07 : Second Battle of Ypres
 	1916-07-01 : Battle of the Somme
-	1917-03-08 : Russian Revolution
 ```
 
 ------
