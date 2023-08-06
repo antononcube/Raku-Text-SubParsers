@@ -34,7 +34,7 @@ class Text::SubParsers::Core
     }
 
     multi method parse(@input, $spec, Bool :$exact = True) {
-        return @input.map({ self.parse($_, $spec, :$exact) });
+        return @input.map({ self.parse($_, $spec, :$exact) }).Array;
     }
 
     multi method parse(%input, $spec, Bool :$exact = True) {
@@ -58,6 +58,10 @@ class Text::SubParsers::Core
                     $_ ~~ Num:U ||
                     $_ ~~ Str:D && $_.lc ∈ <Numeric Number>>>.lc {
                 self.get-matches($input, { $_.trim ?? $_.trim.Numeric !! Nil }, :$exact);
+            }
+
+            when $_ ~~ Str:D && $_.lc ∈ <GenericNumeric GeneralNumber>>>.lc {
+                self.get-matches($input.subst(/(\d) ',' (\d**3)/, {"$0_$1"}):g, { $_.trim ?? $_.trim.Numeric !! Nil }, :$exact);
             }
 
             when $_ ~~ Rational:U ||
@@ -97,7 +101,7 @@ class Text::SubParsers::Core
                                 $input,
                                 { self.many-funcs($_, [&datetime-interpret,
                                                        &from-json,
-                                                       { $_.Numeric },
+                                                       { $_.subst(/(\d) ',' (\d**3)/, {"$0_$1"}, :g).Numeric },
                                                        { self.to-bool($_) }])
                                 },
                                 :$exact);
