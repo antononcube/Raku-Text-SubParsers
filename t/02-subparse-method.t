@@ -48,5 +48,19 @@ is-deeply
         Text::SubParsers::Core.new({ $_.trim ?? $_.trim.Numeric !! Nil }).subparse($res6),
         $["The average mass is", 55, "lbs."];
 
+## 8
+my $res8 = 'The average anti-mass is -5.4E-12 kg.';
+
+is-deeply
+        Text::SubParsers::Core.new(Numeric).subparse($res8),
+        $["The average anti-mass is", -5.4e-12, "kg."];
+
+## 9
+my $res9 = 'The rocket speed was 24,133 m/s.';
+
+is-deeply
+        Text::SubParsers::Core.new('GeneralNumber').subparse($res9),
+        $["The rocket speed was", 24_133, "m/s."];
+
 
 done-testing;
