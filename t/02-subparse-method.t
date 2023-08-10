@@ -27,7 +27,7 @@ my $res4 = 'The dictionary is: [{ "ui" : 3, "io" : 78 }].';
 
 is-deeply
         Text::SubParsers::Core.new('JSON').subparse($res4),
-        $["The dictionary is:", {:io(78), :ui(3)}, "."];
+        $["The dictionary is:", { :io(78), :ui(3) }, "."];
 
 ## 5
 my $res5 = '[{ "ui" : 3, "io" : 78}, { "GA" : 34, "CA" : 178}]';
@@ -62,5 +62,21 @@ is-deeply
         Text::SubParsers::Core.new('GeneralNumber').subparse($res9),
         $["The rocket speed was", 24_133, "m/s."];
 
+## 10
+is
+        Text::SubParsers::Core.new(spec => DateTime, :!exact, :drop).subparse($res1).elems,
+        2,
+        'Two dates recognized into a two element list if :drop';
+
+## 11
+is
+        Text::SubParsers::Core.new(spec => DateTime, :!exact, :!drop).subparse($res1).elems,
+        5,
+        'Two dates recognized into a five element list if :!drop';
+
+## 12
+is-deeply
+        Text::SubParsers::Core.new(spec => 'DateTime', :!exact, :drop).subparse($res1),
+        Text::SubParsers::Core.new(spec => DateTime, :!exact, :drop).subparse($res1);
 
 done-testing;
