@@ -8,6 +8,7 @@ class Text::SubParsers::Core
         does Text::SubParsers::Functions {
     has $.spec is rw = 'Str';
     has Bool $.exact is rw = False;
+    has Bool $.drop is rw = False;
 
     #-------------------------------------------------------
     multi method new($spec) {
@@ -164,14 +165,24 @@ class Text::SubParsers::Core
                 try { $p = &func($0.Str) };
                 if !$p.defined || $! { False } else { True }
             }> / -> $match {
-                if $cind < $match.from - 1 {
+                # Add text fragments before the current match (and after the previous one)
+                if $cind < $match.from - 1 && !$!drop {
                     @ires.append($input.substr($cind .. $match.from - 1));
                 }
+
+                # Move pointer
                 $cind = $match.to;
+
+                # Append successfully parsed match
                 @ires.append(&func(~$match));
+
+                # Log into candidates
                 @candidates.append($[$input.substr(0, $match.from), @ires.tail]);
             }
-            if $cind < $input.chars {
+
+            # If current pointer is less than text's length
+            # then add the (unmatched) text fragment
+            if $cind < $input.chars && !$!drop {
                 @ires.append($input.substr($cind));
             }
         }
