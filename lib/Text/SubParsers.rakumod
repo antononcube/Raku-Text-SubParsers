@@ -10,15 +10,15 @@ unit module Text::SubParsers;
 #| C<exact> -- Should the parsing with the method C<process> be exact or not?
 our proto sub sub-parser(|) is export {*}
 
-multi sub sub-parser($spec, Bool $exact = False) {
-    return sub-parser(:$spec, :$exact);
+multi sub sub-parser($spec, Bool $exact = False, Bool :$drop = False) {
+    return sub-parser(:$spec, :$exact, :$drop);
 }
 
-multi sub sub-parser(:$spec, Bool :$exact = False) {
+multi sub sub-parser(:$spec, Bool :$exact = False, Bool :$drop = False) {
     return do given $spec {
         when Text::SubParsers::Core { $spec }
-        when Str { Text::SubParsers::Core.new(:$spec, :$exact) }
-        default { Text::SubParsers::Core.new(:$spec, :$exact) }
+        when Str { Text::SubParsers::Core.new(:$spec, :$exact, :$drop) }
+        default { Text::SubParsers::Core.new(:$spec, :$exact, :$drop) }
     }
 }
 
@@ -27,9 +27,9 @@ multi sub sub-parser(:$spec, Bool :$exact = False) {
 our proto sub exact-parser(|) is export {*}
 
 multi sub exact-parser($spec) {
-    return sub-parser(:$spec, :exact);
+    return sub-parser(:$spec, :exact, :!drop);
 }
 
 multi sub exact-parser(:$spec) {
-    return sub-parser(:$spec, :exact);
+    return sub-parser(:$spec, :exact, :!drop);
 }
