@@ -118,6 +118,16 @@ class Text::SubParsers::Core
                 self.get-matches($input, $spec, :$exact)
             }
 
+            when $spec ~~ Positional && $spec.all ~~ Callable {
+                my %res = self.get-matches($input, { self.many-funcs($_, $spec) }, :$exact);
+
+                with %res<parsed> {
+                    %res
+                } else {
+                    %(:$input, parsed => $input, error => '')
+                }
+            }
+
             default {
                 note 'Unknown interpreter specification: ' ~ $spec.raku;
                 %(:$input, parsed => $input, error => '')
