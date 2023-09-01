@@ -1,7 +1,7 @@
 {
   "name": "Text::SubParsers",
   "description": "Text::SubParsers is for extracting and processing of interpret-able sub-strings in texts",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "perl": "6.*",
   "authors": [
     "Anton Antonov"
