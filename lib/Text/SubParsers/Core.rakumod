@@ -7,6 +7,7 @@ use Text::SubParsers::Functions;
 class Text::SubParsers::Core
         does Text::SubParsers::Functions {
     has $.spec is rw = 'Str';
+    has UInt $.digit-group-count is rw = 3;
     has Bool $.exact is rw = False;
     has Bool $.drop is rw = False;
 
@@ -206,10 +207,6 @@ class Text::SubParsers::Core
 
     #-------------------------------------------------------
     method replace-digit-group-commas(Str $input) {
-        my $res = $input;
-        for $input ~~ m:ex/\d ',' \d ** 3/ -> $m {
-            $res = $res.substr(0 .. $m.from) ~ '_' ~ $res.substr($m.from + 2);
-        }
-        return $res;
+        return $input.subst(/ <?after \d> ',' <?before \d ** 3> /, '_', :g);
     }
 }
