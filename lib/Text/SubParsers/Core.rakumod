@@ -48,7 +48,7 @@ class Text::SubParsers::Core
             when $_ ~~ DateTime:U ||
                     $_ ~~ Date:U ||
                     $_ ~~ Str:D && $_.lc ∈ <DateTime Date>>>.lc {
-                self.get-matches($input.trim, &datetime-interpret, :$exact)
+                self.get-matches($input.trim, { datetime-interpret($_, :extended) }, :$exact)
             }
 
             when $_ ~~ Str:D && $_.lc ∈ <JSON FromJSON from-json>>>.lc {
@@ -61,8 +61,8 @@ class Text::SubParsers::Core
                 self.get-matches($input, { $_.trim ?? $_.trim.Numeric !! Nil }, :$exact);
             }
 
-            when $_ ~~ Str:D && $_.lc ∈ <GenericNumeric GeneralNumber>>>.lc {
-                self.get-matches($input.subst(/(\d) ',' (\d**3)/, {"$0_$1"}):g, { $_.trim ?? $_.trim.Numeric !! Nil }, :$exact);
+            when $_ ~~ Str:D && $_.lc ∈ <GenericNumeric GeneralNumber GenericNumber>>>.lc {
+                self.get-matches(self.replace-digit-group-commas($input), { $_.trim ?? $_.trim.Numeric !! Nil }, :$exact);
             }
 
             when $_ ~~ Rational:U ||
@@ -102,7 +102,7 @@ class Text::SubParsers::Core
                                 $input,
                                 { self.many-funcs($_, [&datetime-interpret,
                                                        &from-json,
-                                                       { $_.subst(/(\d) ',' (\d**3)/, {"$0_$1"}, :g).Numeric },
+                                                       { self.replace-digit-group-commas($_).Numeric },
                                                        { self.to-bool($_) }])
                                 },
                                 :$exact);
@@ -202,5 +202,14 @@ class Text::SubParsers::Core
         } else {
             return %(:$input, parsed => Empty, error => "No interpretations found with the given function for the given input.");
         }
+    }
+
+    #-------------------------------------------------------
+    method replace-digit-group-commas(Str $input) {
+        my $res = $input;
+        for $input ~~ m:ex/\d ',' \d ** 3/ -> $m {
+            $res = $res.substr(0 .. $m.from) ~ '_' ~ $res.substr($m.from + 2);
+        }
+        return $res;
     }
 }
